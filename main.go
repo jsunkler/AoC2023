@@ -2,7 +2,8 @@ package main
 
 import (
 	"flag"
-	"log/slog"
+	"fmt"
+	"os"
 
 	"github.com/jsunkler/AoC2023/solvers"
 )
@@ -11,7 +12,10 @@ func main() {
 	var dayFlag = flag.Int("day", 1, "Enter the day of december to process.")
 	flag.Parse()
 
-	slog.Info("Solving...", "day", *dayFlag)
-	p1, p2 := solvers.Solve(*dayFlag)
-	slog.Info("Solved.", "Part 1", p1, "Part 2", p2)
+	p1, p2, err := solvers.Solve(*dayFlag)
+	if err != nil {
+		fmt.Printf("Execution failed. Error: %w\n", err)
+		os.Exit(1)
+	}
+	fmt.Printf("Solved!\nPart 1\n%s\n\nPart 2\n%s\n\n", p1, p2)
 }

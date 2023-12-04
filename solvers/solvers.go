@@ -1,9 +1,9 @@
 package solvers
 
 import (
+	"errors"
 	"fmt"
 	"io"
-	"log/slog"
 	"net/http"
 	"os"
 )
@@ -14,21 +14,47 @@ func init() {
 	dayMap[1] = solveDay1
 }
 
-func Solve(day int) (string, string) {
-	rd := loadData(day)
-	return dayMap[day](rd)
+func Solve(day int) (string, string, error) {
+	rd, err := loadData(day)
+	if err != nil {
+		return "", "", fmt.Errorf("solving day %d failed. error: %w", day, err)
+	}
+	s1, s2 := dayMap[day](rd)
+
+	return s1, s2, nil
 }
 
-func loadData(day int) io.ReadCloser {
-	file, err := os.Open("cookie.txt")
-	if err != nil {
-		slog.Error("Error opening session-cookie-file.", "err", err)
-	}
-	defer file.Close()
+func loadData(day int) (io.ReadCloser, error) {
+	currentDayFileName := fmt.Sprintf("input.%d.txt", day)
 
-	bytes, err := io.ReadAll(file)
+	if _, err := os.Stat(currentDayFileName); errors.Is(err, os.ErrNotExist) {
+		err2 := loadDataOnline(day, currentDayFileName)
+		if err2 != nil {
+			return nil, err2
+		}
+	}
+
+	file, err := os.Open(currentDayFileName)
 	if err != nil {
-		slog.Error("Error reading session-cookie-file", "err", err)
+		return nil, err
+	}
+
+	return file, nil
+}
+
+func loadDataOnline(day int, fileName string) error {
+
+	fmt.Println("Input data not cached yet. Downloading it...")
+
+	cookieFile, err := os.Open("cookie.txt")
+	if err != nil {
+		return fmt.Errorf("error opening session-cookie-file. error=%w", err)
+	}
+	defer cookieFile.Close()
+
+	bytes, err := io.ReadAll(cookieFile)
+	if err != nil {
+		return fmt.Errorf("error reading session-cookie-file. error=%w", err)
 	}
 
 	cookieVal := string(bytes)
@@ -45,17 +71,28 @@ func loadData(day int) io.ReadCloser {
 
 	req, err := http.NewRequest("GET", fmt.Sprintf("https://adventofcode.com/2023/day/%d/input", day), nil)
 	if err != nil {
-		slog.Error("Error constructing request.", "err", err)
+		return fmt.Errorf("error constructing request. error=%w", err)
 	}
 
 	req.AddCookie(&cookie)
 
 	response, err := http.DefaultClient.Do(req)
 	if err != nil {
-		slog.Error("Error downloading data.", "err", err)
+		return fmt.Errorf("error downloading data. error=%w", err)
 	}
 
-	slog.Info("Download of inputdata succeeded.", "statusCode", response.StatusCode, "contentLength", response.ContentLength)
+	if response.StatusCode != http.StatusOK {
+		return fmt.Errorf("got wrong StatusCode on download. statusCode=%d", response.StatusCode)
+	}
 
-	return response.Body
+	inputFile, err := os.OpenFile(fileName, os.O_CREATE|os.O_WRONLY, 0666)
+	if err != nil {
+		return fmt.Errorf("could not write cached input file. error=%w", err)
+	}
+
+	if _, err := io.Copy(inputFile, response.Body); err != nil {
+		return fmt.Errorf("could not write cached input file. error=%w", err)
+	}
+
+	return nil
 }
