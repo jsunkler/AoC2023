@@ -12,6 +12,7 @@ var dayMap = make(map[int](func(io.ReadCloser) (string, string)))
 
 func init() {
 	dayMap[1] = solveDay1
+	dayMap[2] = solveDay2
 }
 
 func Solve(day int) (string, string, error) {
@@ -80,6 +81,7 @@ func loadDataOnline(day int, fileName string) error {
 	if err != nil {
 		return fmt.Errorf("error downloading data. error=%w", err)
 	}
+	defer response.Body.Close()
 
 	if response.StatusCode != http.StatusOK {
 		return fmt.Errorf("got wrong StatusCode on download. statusCode=%d", response.StatusCode)
@@ -89,6 +91,7 @@ func loadDataOnline(day int, fileName string) error {
 	if err != nil {
 		return fmt.Errorf("could not write cached input file. error=%w", err)
 	}
+	defer inputFile.Close()
 
 	if _, err := io.Copy(inputFile, response.Body); err != nil {
 		return fmt.Errorf("could not write cached input file. error=%w", err)
