@@ -13,6 +13,7 @@ var dayMap = make(map[int](func(io.ReadCloser) (string, string, error)))
 func init() {
 	dayMap[1] = solveDay1
 	dayMap[2] = solveDay2
+	dayMap[3] = solveDay3
 }
 
 func Solve(day int) (string, string, error) {
