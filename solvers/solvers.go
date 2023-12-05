@@ -8,7 +8,7 @@ import (
 	"os"
 )
 
-var dayMap = make(map[int](func(io.ReadCloser) (string, string)))
+var dayMap = make(map[int](func(io.ReadCloser) (string, string, error)))
 
 func init() {
 	dayMap[1] = solveDay1
@@ -20,7 +20,10 @@ func Solve(day int) (string, string, error) {
 	if err != nil {
 		return "", "", fmt.Errorf("solving day %d failed. error: %w", day, err)
 	}
-	s1, s2 := dayMap[day](rd)
+	s1, s2, err := dayMap[day](rd)
+	if err != nil {
+		return "", "", err
+	}
 
 	return s1, s2, nil
 }

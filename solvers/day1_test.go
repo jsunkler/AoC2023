@@ -32,7 +32,7 @@ func Test_day1part1(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := day1part1(tt.args.input); got != tt.want {
+			if got, _ := day1part1(tt.args.input); got != tt.want {
 				t.Errorf("day1part1() = %v, want %v", got, tt.want)
 			}
 		})
@@ -52,7 +52,7 @@ func Test_day1part2(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := day1part2(tt.args.input); got != tt.want {
+			if got, _ := day1part2(tt.args.input); got != tt.want {
 				t.Errorf("day1part2() = %v, want %v", got, tt.want)
 			}
 		})

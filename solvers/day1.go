@@ -4,22 +4,30 @@ import (
 	"bufio"
 	"bytes"
 	"io"
-	"log/slog"
 	"regexp"
 	"strconv"
 )
 
-func solveDay1(input io.ReadCloser) (string, string) {
+func solveDay1(input io.ReadCloser) (string, string, error) {
 	defer input.Close()
 
 	var buf bytes.Buffer
 
 	tee := io.TeeReader(input, &buf)
 
-	return day1part1(tee), day1part2(&buf)
+	part1, err := day1part1(tee)
+	if err != nil {
+		return "", "", err
+	}
+	part2, err := day1part2(&buf)
+	if err != nil {
+		return "", "", err
+	}
+
+	return part1, part2, nil
 }
 
-func day1part1(input io.Reader) string {
+func day1part1(input io.Reader) (string, error) {
 	scanner := bufio.NewScanner(input)
 
 	regex := regexp.MustCompile(`\d`)
@@ -37,16 +45,16 @@ func day1part1(input io.Reader) string {
 		number, err := strconv.Atoi(s1 + s2)
 
 		if err != nil {
-			slog.Error("Cannot convert number.", "s1", s1, "s2", s2)
+			return "", err
 		}
 
 		sum += number
 	}
 
-	return strconv.Itoa(sum)
+	return strconv.Itoa(sum), nil
 }
 
-func day1part2(input io.Reader) string {
+func day1part2(input io.Reader) (string, error) {
 	scanner := bufio.NewScanner(input)
 
 	stringToNumberMap := map[string]string{
@@ -86,13 +94,13 @@ func day1part2(input io.Reader) string {
 		number, err := strconv.Atoi(s1 + s2)
 
 		if err != nil {
-			slog.Error("Cannot convert number.", "s1", s1, "s2", s2)
+			return "", err
 		}
 
 		sum += number
 	}
 
-	return strconv.Itoa(sum)
+	return strconv.Itoa(sum), nil
 }
 
 func reverseString(s string) string {
