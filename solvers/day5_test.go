@@ -103,7 +103,7 @@ func Test_day5part2(t *testing.T) {
 		args args
 		want string
 	}{
-		{name: "testingdata day 5 part 2", args: args{input: strings.NewReader(testdata_day4_part2)}, want: "-1"},
+		{name: "testingdata day 5 part 2", args: args{input: strings.NewReader(testdata_day5_part2)}, want: "46"},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
