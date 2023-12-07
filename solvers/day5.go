@@ -25,7 +25,7 @@ func solveDay5(input io.ReadCloser) (string, string, error) {
 		return "", "", err
 	}
 
-	fmt.Printf("Part 1 took: %s", time.Since(start))
+	fmt.Printf("Part 1 took: %s\n", time.Since(start))
 	start2 := time.Now()
 
 	part2, err := day5part2(&buf)
@@ -33,8 +33,8 @@ func solveDay5(input io.ReadCloser) (string, string, error) {
 		return "", "", err
 	}
 
-	fmt.Printf("Part 2 took: %s", time.Since(start2))
-	fmt.Printf("Full solution took: %s", time.Since(start))
+	fmt.Printf("Part 2 took: %s\n", time.Since(start2))
+	fmt.Printf("Full solution took: %s\n", time.Since(start))
 
 	return part1, part2, nil
 }
