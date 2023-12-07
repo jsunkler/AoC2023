@@ -18,7 +18,7 @@ func init() {
 
 func Solve(day int) (string, string, error) {
 	if _, ok := dayMap[day]; !ok {
-		return "", "", fmt.Errorf("day %d not yet implemented.", day)
+		return "", "", fmt.Errorf("day %d not yet implemented", day)
 	}
 
 	rd, err := loadData(day)
