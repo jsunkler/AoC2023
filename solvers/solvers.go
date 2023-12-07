@@ -14,6 +14,7 @@ func init() {
 	dayMap[1] = solveDay1
 	dayMap[2] = solveDay2
 	dayMap[3] = solveDay3
+	dayMap[4] = solveDay4
 }
 
 func Solve(day int) (string, string, error) {
