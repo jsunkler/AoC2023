@@ -5,6 +5,8 @@ import (
 	"bytes"
 	"fmt"
 	"io"
+	"strconv"
+	"strings"
 	"time"
 )
 
@@ -38,22 +40,104 @@ func solveDay6(input io.ReadCloser) (string, string, error) {
 
 func day6part1(input io.Reader) (string, error) {
 	scanner := bufio.NewScanner(input)
+	timesMs := make([]int, 0)
+	distances := make([]int, 0)
 
 	for row := 0; scanner.Scan(); row++ {
 		line := scanner.Text()
 
+		if row == 0 {
+			strTimesMs := strings.Fields(line)[1:]
+			for _, val := range strTimesMs {
+				currVal, err := strconv.Atoi(val)
+				if err != nil {
+					return "", err
+				}
+				timesMs = append(timesMs, currVal)
+			}
+		}
+
+		if row == 1 {
+			strDistances := strings.Fields(line)[1:]
+			for _, val := range strDistances {
+				currVal, err := strconv.Atoi(val)
+				if err != nil {
+					return "", err
+				}
+				distances = append(distances, currVal)
+			}
+		}
+
 	}
 
-	return "", nil
+	sum := 1
+
+	for i := range timesMs {
+		currentRaceDurationMs := timesMs[i]
+		currentRaceRecordDistance := distances[i]
+
+		winnings := 0
+
+		for holdDurationMs := 1; holdDurationMs < currentRaceDurationMs; holdDurationMs++ {
+			distance := holdDurationMs * (currentRaceDurationMs - holdDurationMs)
+			if distance > currentRaceRecordDistance {
+				winnings++
+			}
+		}
+
+		sum *= winnings
+	}
+
+	return strconv.Itoa(sum), nil
 }
 
 func day6part2(input io.Reader) (string, error) {
 	scanner := bufio.NewScanner(input)
+	timesMs := make([]int, 0)
+	distances := make([]int, 0)
 
 	for row := 0; scanner.Scan(); row++ {
 		line := scanner.Text()
 
+		if row == 0 {
+			strTimesMs := strings.Fields(line)[1:]
+			strOneTime := strings.Join(strTimesMs, "")
+			currVal, err := strconv.Atoi(strOneTime)
+			if err != nil {
+				return "", err
+			}
+			timesMs = append(timesMs, currVal)
+		}
+
+		if row == 1 {
+			strDistances := strings.Fields(line)[1:]
+			strOneDistance := strings.Join(strDistances, "")
+			currVal, err := strconv.Atoi(strOneDistance)
+			if err != nil {
+				return "", err
+			}
+			distances = append(distances, currVal)
+		}
+
 	}
 
-	return "", nil
+	sum := 1
+
+	for i := range timesMs {
+		currentRaceDurationMs := timesMs[i]
+		currentRaceRecordDistance := distances[i]
+
+		winnings := 0
+
+		for holdDurationMs := 1; holdDurationMs < currentRaceDurationMs; holdDurationMs++ {
+			distance := holdDurationMs * (currentRaceDurationMs - holdDurationMs)
+			if distance > currentRaceRecordDistance {
+				winnings++
+			}
+		}
+
+		sum *= winnings
+	}
+
+	return strconv.Itoa(sum), nil
 }
