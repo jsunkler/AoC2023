@@ -3,9 +3,12 @@ package solvers
 import (
 	"bufio"
 	"bytes"
+	"cmp"
 	"fmt"
 	"io"
+	"slices"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -40,12 +43,31 @@ func solveDay7(input io.ReadCloser) (string, string, error) {
 func day7part1(input io.Reader) (string, error) {
 	scanner := bufio.NewScanner(input)
 
+	hands := make([]*Hand, 0)
+
 	for row := 0; scanner.Scan(); row++ {
 		line := scanner.Text()
-		fmt.Println(line)
+
+		vals := strings.Fields(line)
+		strHand := vals[0]
+		strBid := vals[1]
+		iBid, err := strconv.Atoi(strBid)
+		if err != nil {
+			return "", err
+		}
+		hands = append(hands, &Hand{
+			cards: []rune(strHand),
+			bid:   iBid,
+		})
 	}
 
+	slices.SortFunc(hands, CompareHandsPart1)
+
 	sum := 0
+
+	for i, h := range hands {
+		sum += (i + 1) * h.bid
+	}
 
 	return strconv.Itoa(sum), nil
 }
@@ -53,12 +75,148 @@ func day7part1(input io.Reader) (string, error) {
 func day7part2(input io.Reader) (string, error) {
 	scanner := bufio.NewScanner(input)
 
+	hands := make([]*Hand, 0)
+
 	for row := 0; scanner.Scan(); row++ {
 		line := scanner.Text()
-		fmt.Println(line)
+
+		vals := strings.Fields(line)
+		strHand := vals[0]
+		strBid := vals[1]
+		iBid, err := strconv.Atoi(strBid)
+		if err != nil {
+			return "", err
+		}
+		hands = append(hands, &Hand{
+			cards: []rune(strHand),
+			bid:   iBid,
+		})
 	}
+
+	slices.SortFunc(hands, CompareHandsPart2)
 
 	sum := 0
 
+	for i, h := range hands {
+		sum += (i + 1) * h.bid
+	}
+
 	return strconv.Itoa(sum), nil
+}
+
+var cardOrderingPart1 string = "23456789TJQKA"
+var cardOrderingPart2 string = "J23456789TQKA"
+
+type Hand struct {
+	cards []rune
+	bid   int
+}
+
+func CompareHandsPart1(a *Hand, b *Hand) int {
+	if n := cmp.Compare(a.CalculateCompareValPart1(), b.CalculateCompareValPart1()); n != 0 {
+		return n
+	}
+
+	for currIndex := 0; currIndex < 5; currIndex++ {
+		rA := strings.IndexRune(cardOrderingPart1, a.cards[currIndex])
+		rB := strings.IndexRune(cardOrderingPart1, b.cards[currIndex])
+		if n := cmp.Compare(rA, rB); n != 0 {
+			return n
+		}
+	}
+
+	return 0
+}
+
+func CompareHandsPart2(a *Hand, b *Hand) int {
+	if n := cmp.Compare(a.CalculateCompareValPart2(), b.CalculateCompareValPart2()); n != 0 {
+		return n
+	}
+
+	for currIndex := 0; currIndex < 5; currIndex++ {
+		rA := strings.IndexRune(cardOrderingPart2, a.cards[currIndex])
+		rB := strings.IndexRune(cardOrderingPart2, b.cards[currIndex])
+		if n := cmp.Compare(rA, rB); n != 0 {
+			return n
+		}
+	}
+
+	return 0
+}
+
+func (hand *Hand) CountCards() map[rune]int {
+	counterMap := make(map[rune]int, 0)
+
+	for _, r := range hand.cards {
+		counterMap[r]++
+	}
+
+	return counterMap
+}
+
+func (hand *Hand) CalculateCompareValPart1() int {
+	m := hand.CountCards()
+
+	values := make([]int, 0, len(m))
+
+	for _, v := range m {
+		values = append(values, v)
+	}
+
+	if len(m) == 1 {
+		return 6
+	}
+	if len(m) == 2 {
+		if slices.Max(values) == 4 {
+			return 5
+		} else {
+			return 4
+		}
+	}
+	if len(m) == 3 {
+		if slices.Max(values) == 3 {
+			return 3
+		} else {
+			return 2
+		}
+	}
+	if len(m) == 4 {
+		return 1
+	}
+	return 0
+}
+
+func (hand *Hand) CalculateCompareValPart2() int {
+	m := hand.CountCards()
+
+	jokers := m['J']
+	delete(m, 'J')
+
+	values := make([]int, 0, len(m))
+
+	for _, v := range m {
+		values = append(values, v)
+	}
+
+	if len(m) <= 1 {
+		return 6
+	}
+	if len(m) == 2 {
+		if slices.Max(values)+jokers == 4 {
+			return 5
+		} else {
+			return 4
+		}
+	}
+	if len(m) == 3 {
+		if slices.Max(values)+jokers == 3 {
+			return 3
+		} else {
+			return 2
+		}
+	}
+	if len(m) == 4 {
+		return 1
+	}
+	return 0
 }
