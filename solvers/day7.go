@@ -43,7 +43,7 @@ func solveDay7(input io.ReadCloser) (string, string, error) {
 func day7part1(input io.Reader) (string, error) {
 	scanner := bufio.NewScanner(input)
 
-	hands := make([]*Hand, 0)
+	hands := make([]*Day7Hand, 0)
 
 	for row := 0; scanner.Scan(); row++ {
 		line := scanner.Text()
@@ -55,13 +55,13 @@ func day7part1(input io.Reader) (string, error) {
 		if err != nil {
 			return "", err
 		}
-		hands = append(hands, &Hand{
+		hands = append(hands, &Day7Hand{
 			cards: []rune(strHand),
 			bid:   iBid,
 		})
 	}
 
-	slices.SortFunc(hands, CompareHandsPart1)
+	slices.SortFunc(hands, compareHandsPart1)
 
 	sum := 0
 
@@ -75,7 +75,7 @@ func day7part1(input io.Reader) (string, error) {
 func day7part2(input io.Reader) (string, error) {
 	scanner := bufio.NewScanner(input)
 
-	hands := make([]*Hand, 0)
+	hands := make([]*Day7Hand, 0)
 
 	for row := 0; scanner.Scan(); row++ {
 		line := scanner.Text()
@@ -87,13 +87,13 @@ func day7part2(input io.Reader) (string, error) {
 		if err != nil {
 			return "", err
 		}
-		hands = append(hands, &Hand{
+		hands = append(hands, &Day7Hand{
 			cards: []rune(strHand),
 			bid:   iBid,
 		})
 	}
 
-	slices.SortFunc(hands, CompareHandsPart2)
+	slices.SortFunc(hands, compareHandsPart2)
 
 	sum := 0
 
@@ -104,22 +104,22 @@ func day7part2(input io.Reader) (string, error) {
 	return strconv.Itoa(sum), nil
 }
 
-var cardOrderingPart1 string = "23456789TJQKA"
-var cardOrderingPart2 string = "J23456789TQKA"
+var day7cardOrderingPart1 string = "23456789TJQKA"
+var day7cardOrderingPart2 string = "J23456789TQKA"
 
-type Hand struct {
+type Day7Hand struct {
 	cards []rune
 	bid   int
 }
 
-func CompareHandsPart1(a *Hand, b *Hand) int {
+func compareHandsPart1(a *Day7Hand, b *Day7Hand) int {
 	if n := cmp.Compare(a.CalculateCompareValPart1(), b.CalculateCompareValPart1()); n != 0 {
 		return n
 	}
 
 	for currIndex := 0; currIndex < 5; currIndex++ {
-		rA := strings.IndexRune(cardOrderingPart1, a.cards[currIndex])
-		rB := strings.IndexRune(cardOrderingPart1, b.cards[currIndex])
+		rA := strings.IndexRune(day7cardOrderingPart1, a.cards[currIndex])
+		rB := strings.IndexRune(day7cardOrderingPart1, b.cards[currIndex])
 		if n := cmp.Compare(rA, rB); n != 0 {
 			return n
 		}
@@ -128,14 +128,14 @@ func CompareHandsPart1(a *Hand, b *Hand) int {
 	return 0
 }
 
-func CompareHandsPart2(a *Hand, b *Hand) int {
+func compareHandsPart2(a *Day7Hand, b *Day7Hand) int {
 	if n := cmp.Compare(a.CalculateCompareValPart2(), b.CalculateCompareValPart2()); n != 0 {
 		return n
 	}
 
 	for currIndex := 0; currIndex < 5; currIndex++ {
-		rA := strings.IndexRune(cardOrderingPart2, a.cards[currIndex])
-		rB := strings.IndexRune(cardOrderingPart2, b.cards[currIndex])
+		rA := strings.IndexRune(day7cardOrderingPart2, a.cards[currIndex])
+		rB := strings.IndexRune(day7cardOrderingPart2, b.cards[currIndex])
 		if n := cmp.Compare(rA, rB); n != 0 {
 			return n
 		}
@@ -144,7 +144,7 @@ func CompareHandsPart2(a *Hand, b *Hand) int {
 	return 0
 }
 
-func (hand *Hand) CountCards() map[rune]int {
+func (hand *Day7Hand) CountCards() map[rune]int {
 	counterMap := make(map[rune]int, 0)
 
 	for _, r := range hand.cards {
@@ -154,7 +154,7 @@ func (hand *Hand) CountCards() map[rune]int {
 	return counterMap
 }
 
-func (hand *Hand) CalculateCompareValPart1() int {
+func (hand *Day7Hand) CalculateCompareValPart1() int {
 	m := hand.CountCards()
 
 	values := make([]int, 0, len(m))
@@ -186,7 +186,7 @@ func (hand *Hand) CalculateCompareValPart1() int {
 	return 0
 }
 
-func (hand *Hand) CalculateCompareValPart2() int {
+func (hand *Day7Hand) CalculateCompareValPart2() int {
 	m := hand.CountCards()
 
 	jokers := m['J']
